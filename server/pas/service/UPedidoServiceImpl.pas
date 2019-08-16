@@ -4,7 +4,8 @@ interface
 
 uses
   UPedidoServiceIntf, UPizzaTamanhoEnum, UPizzaSaborEnum,
-  UPedidoRepositoryIntf, UPedidoRetornoDTOImpl, UClienteServiceIntf;
+  UPedidoRepositoryIntf, UPedidoRetornoDTOImpl, UClienteServiceIntf,
+  System.TypInfo;
 
 type
   TPedidoService = class(TInterfacedObject, IPedidoService)
@@ -16,6 +17,7 @@ type
     function calcularTempoPreparo(const APizzaTamanho: TPizzaTamanhoEnum; const APizzaSabor: TPizzaSaborEnum): Integer;
   public
     function efetuarPedido(const APizzaTamanho: TPizzaTamanhoEnum; const APizzaSabor: TPizzaSaborEnum; const ADocumentoCliente: String): TPedidoRetornoDTO;
+    function consultarPedidoAndersonFurtilho(const ADocumentoCliente: string): TPedidoRetornoDTO;
 
     constructor Create; reintroduce;
   end;
@@ -23,7 +25,8 @@ type
 implementation
 
 uses
-  UPedidoRepositoryImpl, System.SysUtils, UClienteServiceImpl;
+  UPedidoRepositoryImpl, System.SysUtils, UClienteServiceImpl,
+  FireDAC.Comp.Client;
 
 { TPedidoService }
 
@@ -54,6 +57,33 @@ begin
     enGrande:
       Result := 40;
   end;
+end;
+
+function TPedidoService.consultarPedidoAndersonFurtilho(
+  const ADocumentoCliente: string): TPedidoRetornoDTO;
+var
+  oFDQuery: TFDQuery;
+  S: TPizzaSaborEnum;
+  T: TPizzaTamanhoEnum;
+
+begin
+  oFDQuery := TFDQuery.Create(nil);
+  try
+    FPedidoRepository.consultarPedidoAndersonFurtilho(ADocumentoCliente, oFDQuery);
+
+    if oFDQuery.IsEmpty then
+      raise Exception.Create('O cliente com número do documento '  + ADocumentoCliente + ' não possui pedidos');
+
+    T := TPizzaTamanhoEnum(GetENumValue(TypeInfo(TPizzaTamanhoEnum), oFDQuery.FieldByName('TAMANHO').AsString));
+    S := TPizzaSaborEnum(GetENumValue(TypeInfo(TPizzaSaborEnum), oFDQuery.FieldByName('SABOR').AsString));
+
+    Result := TPedidoRetornoDTO.Create(T,S, oFDQuery.FieldByName('VL_PEDIDO').AsCurrency,
+    oFDQuery.FieldByName('NR_TEMPOPEDIDO').AsInteger);
+  finally
+    oFDQuery.Free;
+  end;
+
+
 end;
 
 constructor TPedidoService.Create;

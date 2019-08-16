@@ -19,7 +19,10 @@ type
     mmRetornoWebService: TMemo;
     edtEnderecoBackend: TLabeledEdit;
     edtPortaBackend: TLabeledEdit;
+    LabeledEditConsultaPedido: TLabeledEdit;
+    Button2: TButton;
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
     { Private-Deklarationen }
   public
@@ -60,6 +63,28 @@ begin
   finally
     Clt.Free;
   end;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+var
+  Clt: TRestClient;
+  oConsultarPedido: TEfetuarPedidoDTO;
+begin
+  Clt := MVCFramework.RESTClient.TRestClient.Create(edtEnderecoBackend.Text,
+    StrToIntDef(edtPortaBackend.Text, 80), nil);
+  try
+    oConsultarPedido := TEfetuarPedidoDTO.Create;
+    try
+      oConsultarPedido.DocumentoCliente := LabeledEditConsultaPedido.Text;
+      mmRetornoWebService.Text := Clt.doGET('/consultarPedido',
+      TJson.ObjecttoJsonString(oConsultarPedido)).BodyAsString;
+    finally
+      oConsultarPedido.Free;
+    end;
+  finally
+    Clt.Free;
+  end;
+
 end;
 
 end.

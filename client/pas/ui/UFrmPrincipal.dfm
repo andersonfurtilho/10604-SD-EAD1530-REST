@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Client'
-  ClientHeight = 256
-  ClientWidth = 597
+  ClientHeight = 430
+  ClientWidth = 934
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,6 +11,9 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  DesignSize = (
+    934
+    430)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -53,7 +56,7 @@ object Form1: TForm1
     Items.Strings = (
       'enPequena'
       'enMedia'
-      'enGrange')
+      'enGrande')
   end
   object cmbSaborPizza: TComboBox
     Left = 16
@@ -78,8 +81,9 @@ object Form1: TForm1
   object mmRetornoWebService: TMemo
     Left = 312
     Top = 25
-    Width = 265
+    Width = 602
     Height = 217
+    Anchors = [akLeft, akTop, akRight]
     Lines.Strings = (
       'mmRetornoWebService')
     TabOrder = 4
@@ -105,5 +109,24 @@ object Form1: TForm1
     EditLabel.Caption = 'Porta Pizzaria Backend:'
     TabOrder = 6
     Text = '8080'
+  end
+  object LabeledEditConsultaPedido: TLabeledEdit
+    Left = 16
+    Top = 329
+    Width = 193
+    Height = 21
+    EditLabel.Width = 98
+    EditLabel.Height = 13
+    EditLabel.Caption = 'N'#250'mero Documento:'
+    TabOrder = 7
+  end
+  object Button2: TButton
+    Left = 16
+    Top = 360
+    Width = 105
+    Height = 25
+    Caption = '&2 - Consultar'
+    TabOrder = 8
+    OnClick = Button2Click
   end
 end

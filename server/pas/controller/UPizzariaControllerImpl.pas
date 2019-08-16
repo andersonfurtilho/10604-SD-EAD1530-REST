@@ -20,6 +20,13 @@ type
     [MVCPath('/efetuarPedido')]
     [MVCHTTPMethod([httpPOST])]
     procedure efetuarPedido(const AContext: TWebContext);
+
+    [MVCDoc('Consultar Pedido')]
+    [MVCPath('/consultarPedido')]
+    [MVCHTTPMethod([httpGET])]
+    procedure consultarPedido(const AContext: TWebContext);
+
+
   end;
 
 implementation
@@ -33,6 +40,27 @@ uses
 
 { TApp1MainController }
 
+procedure TPizzariaBackendController.consultarPedido(
+  const AContext: TWebContext);
+var
+  oEfetuarPedidoDTO: TEfetuarPedidoDTO;
+  oPedidoRetornoDTO: TPedidoRetornoDTO;
+begin
+  oEfetuarPedidoDTO := AContext.Request.BodyAs<TEfetuarPedidoDTO>;
+  try
+    with TPedidoService.Create do
+    try
+      oPedidoRetornoDTO := consultarPedidoAndersonFurtilho(oEfetuarPedidoDTO.DocumentoCliente);
+      Render(TJson.ObjectToJsonString(oPedidoRetornoDTO));
+    finally
+      oPedidoRetornoDTO.Free
+    end;
+  finally
+    oEfetuarPedidoDTO.Free;
+  end;
+  Log.Info('==>Executou o método ', 'consultarPedido');
+end;
+
 procedure TPizzariaBackendController.efetuarPedido(const AContext: TWebContext);
 var
   oEfetuarPedidoDTO: TEfetuarPedidoDTO;
@@ -42,7 +70,8 @@ begin
   try
     with TPedidoService.Create do
     try
-      oPedidoRetornoDTO := efetuarPedido(oEfetuarPedidoDTO.PizzaTamanho, oEfetuarPedidoDTO.PizzaSabor, oEfetuarPedidoDTO.DocumentoCliente);
+      oPedidoRetornoDTO := efetuarPedido(oEfetuarPedidoDTO.PizzaTamanho, oEfetuarPedidoDTO.PizzaSabor,
+      oEfetuarPedidoDTO.DocumentoCliente);
       Render(TJson.ObjectToJsonString(oPedidoRetornoDTO));
     finally
       oPedidoRetornoDTO.Free
